@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gadgeothek_Admin_App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="352.983" Width="543.892">
+    <DockPanel>
+        <TabControl x:Name="tabControl" Height="323" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="536">
+            <TabItem x:Name="gadgetTabItem" Header="Gadgets">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid Name="gadgetsDataGridView">
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
+                <Grid Background="#FFE5E5E5" />
+            </TabItem>
+        </TabControl>
+
+    </DockPanel>
 </Window>

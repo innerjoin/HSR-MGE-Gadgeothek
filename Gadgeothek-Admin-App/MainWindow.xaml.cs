@@ -1,9 +1,11 @@
-﻿using System;
+﻿using ch.hsr.wpf.gadgeothek.service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Configuration;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -23,6 +25,8 @@ namespace Gadgeothek_Admin_App
         public MainWindow()
         {
             InitializeComponent();
+            LibraryAdminService service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
+            gadgetsDataGridView.ItemsSource = service.GetAllGadgets();
         }
     }
 }
