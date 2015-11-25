@@ -1,22 +1,12 @@
 ﻿using ch.hsr.wpf.gadgeothek.service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Configuration;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ch.hsr.wpf.gadgeothek.domain;
-using ch.hsr.wpf.gadgeothek.service;
+using System.Windows;
 using MahApps.Metro.Controls;
+using System.Windows.Data;
+using System.Windows.Controls;
+using System.ComponentModel;
+using System;
+using ch.hsr.wpf.gadgeothek.domain;
 
 namespace Gadgeothek_Admin_App
 {
@@ -25,14 +15,36 @@ namespace Gadgeothek_Admin_App
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        /// <summary>
-        /// 
-        /// </summary>
+        LibraryAdminService service;
         public MainWindow()
         {
             InitializeComponent();
-            LibraryAdminService service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
+            service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
             gadgetsDataGridView.ItemsSource = service.GetAllGadgets();
+        }
+
+        private void searchTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            searchTextBox.Text = "";
+        }
+
+        private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(service != null)
+            {
+                var _itemSourceList = new CollectionViewSource() { Source = service.GetAllGadgets() };
+                ICollectionView Itemlist = _itemSourceList.View;
+                var yourCostumFilter = new Predicate<object>(item => ((Gadget)item).Name.Contains(((TextBox)sender).Text));
+
+                Itemlist.Filter = yourCostumFilter;
+
+                gadgetsDataGridView.ItemsSource = Itemlist;
+            }
+            /*string InventoryNumber;
+            Condition Condition;
+            double Price;
+            string Manufacturer;
+            string Name;*/            
         }
     }
 }

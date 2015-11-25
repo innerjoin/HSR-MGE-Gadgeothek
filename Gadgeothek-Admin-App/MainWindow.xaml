@@ -6,19 +6,31 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Gadgeothek_Admin_App"
         mc:Ignorable="d"
-        Title="Gadgeothek" Height="352.983" Width="543.892">
+        Title="Gadgeothek" 
+        ResizeMode="CanResizeWithGrip">
     <DockPanel>
-        <TabControl x:Name="tabControl" Height="323" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="536">
+        <TabControl x:Name="tabControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <TabItem x:Name="gadgetTabItem" Header="Gadgets">
-                <Grid Background="#FFE5E5E5">
-                    <DataGrid Name="gadgetsDataGridView">
-                    </DataGrid>
-                </Grid>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBox Name="searchTextBox" Text="Suchen" Width="150" Height="10" Margin="0 0 20 0" TextChanged="searchTextBox_TextChanged" GotFocus="searchTextBox_GotFocus">
+                        </TextBox>
+                        <Button Name="addGadgetButton">
+                            <TextBlock>Gagdet Hinzufügen</TextBlock>
+                        </Button>
+                        <Button Name="deleteGadgetButton">
+                            <TextBlock>Gagdet bearbeiten</TextBlock>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel>
+                        <DataGrid Name="gadgetsDataGridView" />
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
             <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
                 <Grid Background="#FFE5E5E5" />
             </TabItem>
         </TabControl>
-    </DockPanel>    
+    </DockPanel>
 </Controls:MetroWindow>
   
