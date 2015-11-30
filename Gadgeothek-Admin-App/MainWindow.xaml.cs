@@ -4,7 +4,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using ch.hsr.wpf.gadgeothek.service;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows;
 using ch.hsr.wpf.gadgeothek.domain;
+using Gadgeothek_Admin_App.ViewModels;
 using MahApps.Metro.Controls;
 
 namespace Gadgeothek_Admin_App
@@ -12,6 +15,7 @@ namespace Gadgeothek_Admin_App
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public partial class MainWindow : MetroWindow
     {
         LibraryAdminService service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
@@ -21,27 +25,44 @@ namespace Gadgeothek_Admin_App
         public MainWindow()
         {
             InitializeComponent();
-            
+
             List<Gadget> data = service.GetAllGadgets();
-            ObservableCollection<Gadget> sourceCollection = new ObservableCollection<Gadget>(data);
 
-            sourceCollection.CollectionChanged +=
-                new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-            gadgetsDataGridView.ItemsSource = sourceCollection;
+            ObservableCollection<GadgetViewModel> viewGadgets = GetViewGadgets(data);
 
+            if (viewGadgets != null)
+            {
+                viewGadgets.CollectionChanged +=
+                    new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
+                gadgetsDataGridView.ItemsSource = viewGadgets;
+            }
+            else
+            {
+                MessageBox.Show("server seems to be unavailable");
+            }
+
+        }
+
+        private ObservableCollection<GadgetViewModel> GetViewGadgets(List<Gadget> data)
+        {
+            ObservableCollection <GadgetViewModel> obsGadgets = new ObservableCollection<GadgetViewModel>();
+            if (data == null)
+                return null;
+            data.ForEach(x => obsGadgets.Add(new GadgetViewModel(service, x)));
+            return obsGadgets;
         }
 
         void DataGrid_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             bool healthy = false;
-            if (sender.GetType() == typeof (ObservableCollection<Gadget>))
+            if (sender.GetType() == typeof (ObservableCollection<GadgetViewModel>))
             {
                 switch (e.Action)
                 {
                     case NotifyCollectionChangedAction.Remove:
-                        foreach(Gadget gadgetToRemove in e.OldItems)
+                        foreach(GadgetViewModel gadgetToRemove in e.OldItems)
                         {
-                            healthy = service.DeleteGadget(gadgetToRemove);
+                            healthy = gadgetToRemove.Remove();
                         }
                         break;
                     case NotifyCollectionChangedAction.Add:
