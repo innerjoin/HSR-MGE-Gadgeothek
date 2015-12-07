@@ -23,17 +23,17 @@
                         </Button>
                     </StackPanel>
                     <StackPanel>
-                        <DataGrid Name="gadgetsDataGridView" />
+                        <DataGrid Name="gadgetsDataGridView" ItemsSource="{Binding GadgetList}"/>
                     </StackPanel>
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
                 <StackPanel Orientation="Vertical">
-                    <DataGrid Name="customerDataGrid" MinHeight="100" SelectionChanged="customerDataGrid_SelectionChanged"></DataGrid>
+                    <DataGrid Name="customerDataGrid" MinHeight="100" ItemsSource="{Binding CustomerList}" SelectionChanged="customerDataGrid_SelectionChanged" Margin="10,0,-10,0"></DataGrid>
                     
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="reservationDataGridView" MinHeight="100" SelectionChanged="reservationDataGridView_SelectionChanged" />
+                            <DataGrid Name="reservationDataGridView" MinHeight="100" ItemsSource="{Binding ReservationList}" SelectionChanged="reservationDataGridView_SelectionChanged" />
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock>ID</TextBlock>
                                 <ComboBox Name="newReservationComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
@@ -49,7 +49,7 @@
 
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="lendingDataGridView"  MinHeight="100" SelectionChanged="lendingDataGridView_SelectionChanged"/>
+                            <DataGrid Name="lendingDataGridView"  MinHeight="100" ItemsSource="{Binding LoanList}" SelectionChanged="lendingDataGridView_SelectionChanged"/>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock>ID</TextBlock>
                                 <ComboBox Name="newLendingComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
