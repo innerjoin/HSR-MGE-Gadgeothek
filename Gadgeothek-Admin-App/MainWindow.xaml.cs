@@ -25,21 +25,21 @@ namespace Gadgeothek_Admin_App
         public ObservableCollection<GadgetViewModel> GadgetList { get; set; }
         public ObservableCollection<ReservationViewModel> ReservationList { get; set; }
         public ObservableCollection<LoanViewModel> LoanList { get; set; }
-        LibraryAdminService service;
+        LibraryAdminService _service;
         string customerId;
         public MainWindow()
         {
             InitializeComponent();
-            service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
+            _service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
 
-            gadgetsDataGridView.ItemsSource = service.GetAllGadgets();
+            GadgetsDataGridView.ItemsSource = _service.GetAllGadgets();
             enableDisableButtons(false);
             deleteLendingButton.IsEnabled = false;
             deleteReservationButton.IsEnabled = false;
-            List<Gadget> gadgetData = service.GetAllGadgets();
-            List<Customer> customerData = service.GetAllCustomers();
-            List<Reservation> reservationData = service.GetAllReservations();
-            List<Loan> loanData = service.GetAllLoans();
+            List<Gadget> gadgetData = _service.GetAllGadgets();
+            List<Customer> customerData = _service.GetAllCustomers();
+            List<Reservation> reservationData = _service.GetAllReservations();
+            List<Loan> loanData = _service.GetAllLoans();
 
             GadgetList = gadgetData != null ? new ObservableCollection<GadgetViewModel>(GetViewGadgets(gadgetData)): null;
             CustomerList = customerData != null ? new ObservableCollection<CustomerViewModel>(GetViewCustomers(customerData)) : null;
@@ -84,7 +84,7 @@ namespace Gadgeothek_Admin_App
             ObservableCollection<GadgetViewModel> obsGadgets = new ObservableCollection<GadgetViewModel>();
             if (data == null)
                 return null;
-            data.ForEach(x => obsGadgets.Add(new GadgetViewModel(service, x)));
+            data.ForEach(x => obsGadgets.Add(new GadgetViewModel(_service, x)));
             return obsGadgets;
         }
 
@@ -94,7 +94,7 @@ namespace Gadgeothek_Admin_App
             ObservableCollection<CustomerViewModel> obsCustomers = new ObservableCollection<CustomerViewModel>();
             if (data == null)
                 return null;
-            data.ForEach(x => obsCustomers.Add(new CustomerViewModel(service, x)));
+            data.ForEach(x => obsCustomers.Add(new CustomerViewModel(_service, x)));
             return obsCustomers;
         }
 
@@ -103,7 +103,7 @@ namespace Gadgeothek_Admin_App
             ObservableCollection<ReservationViewModel> obsGadgets = new ObservableCollection<ReservationViewModel>();
             if (data == null)
                 return null;
-            data.ForEach(x => obsGadgets.Add(new ReservationViewModel(service, x)));
+            data.ForEach(x => obsGadgets.Add(new ReservationViewModel(_service, x)));
             return obsGadgets;
         }
 
@@ -112,7 +112,7 @@ namespace Gadgeothek_Admin_App
             ObservableCollection<LoanViewModel> obsGadgets = new ObservableCollection<LoanViewModel>();
             if (data == null)
                 return null;
-            data.ForEach(x => obsGadgets.Add(new LoanViewModel(service, x)));
+            data.ForEach(x => obsGadgets.Add(new LoanViewModel(_service, x)));
             return obsGadgets;
         }
 
@@ -132,9 +132,9 @@ namespace Gadgeothek_Admin_App
                     case NotifyCollectionChangedAction.Add:
                         foreach (Gadget newGadget in e.NewItems)
                         {
-                            healthy = newGadget.Manufacturer != null
-                                && newGadget.Name != null
-                                && service.AddGadget(newGadget);
+                            healthy = newGadget.Manufacturer != null 
+                                && newGadget.Name != null 
+                                && _service.AddGadget(newGadget);
                         }
                         break;
                     case NotifyCollectionChangedAction.Replace:
@@ -165,7 +165,7 @@ namespace Gadgeothek_Admin_App
                                 && newCustomer.Email != null
                                 && newCustomer.Password != null
                                 && newCustomer.Studentnumber != null
-                                && service.AddCustomer(newCustomer);
+                                && _service.AddCustomer(newCustomer);
                         }
                         break;
                     case NotifyCollectionChangedAction.Replace:
@@ -195,7 +195,7 @@ namespace Gadgeothek_Admin_App
                             healthy = ((newReservation.CustomerId != null || newReservation.Customer != null)
                                         && (newReservation.Gadget != null || newReservation.GadgetId != null)
                                         && newReservation.Id != null && newReservation.WaitingPosition != -1
-                                        && service.AddReservation(newReservation)
+                                        && _service.AddReservation(newReservation)
                                 );
                         }
                         break;
@@ -225,7 +225,7 @@ namespace Gadgeothek_Admin_App
                         {
                             healthy = ((newLoan.Customer != null || newLoan.CustomerId != null)
                                 && (newLoan.Gadget != null || newLoan.GadgetId!= null)
-                                && newLoan.Id != null && newLoan.ReturnDate != null && service.AddLoan(newLoan));
+                                && newLoan.Id != null && newLoan.ReturnDate != null && _service.AddLoan(newLoan));
                         }
                         break;
                     case NotifyCollectionChangedAction.Replace:
@@ -252,15 +252,15 @@ namespace Gadgeothek_Admin_App
 
         private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(service != null)
+            if(_service != null)
             {
-                var _itemSourceList = new CollectionViewSource() { Source = service.GetAllGadgets() };
+                var _itemSourceList = new CollectionViewSource() { Source = _service.GetAllGadgets() };
                 ICollectionView Itemlist = _itemSourceList.View;
                 var yourCostumFilter = new Predicate<object>(filterGadgets);
 
                 Itemlist.Filter = yourCostumFilter;
 
-                gadgetsDataGridView.ItemsSource = Itemlist;
+                GadgetsDataGridView.ItemsSource = Itemlist;
             }           
         }
 
@@ -278,7 +278,7 @@ namespace Gadgeothek_Admin_App
         {
             AddGadgetWindow addWindow = new AddGadgetWindow();
             addWindow.Show();
-            gadgetsDataGridView.ItemsSource = service.GetAllGadgets();
+            GadgetsDataGridView.ItemsSource = _service.GetAllGadgets();
         }
 
         private void deleteLendingButton_Click(object sender, RoutedEventArgs e)
@@ -308,7 +308,7 @@ namespace Gadgeothek_Admin_App
                 res.GadgetId = ((Gadget)newReservationComboBox.SelectedItem).InventoryNumber;
                 res.ReservationDate = DateTime.Now;
                 res.WaitingPosition = getWaitingPosition(res.Gadget);
-                service.AddReservation(res);
+                _service.AddReservation(res);
             }
         }
 
@@ -322,7 +322,7 @@ namespace Gadgeothek_Admin_App
                 loan.Gadget = (Gadget)newReservationComboBox.SelectedItem;
                 loan.GadgetId = ((Gadget)newReservationComboBox.SelectedItem).InventoryNumber;
                 loan.PickupDate = DateTime.Now;
-                service.AddLoan(loan);
+                _service.AddLoan(loan);
             }
         }
 
@@ -342,7 +342,7 @@ namespace Gadgeothek_Admin_App
         private List<Gadget> getGadgetsForCustomer(string customerId)
         {
             List<Gadget> liste = new List<Gadget>();
-            foreach (Reservation item in service.GetAllReservations())
+            foreach (Reservation item in _service.GetAllReservations())
             {
                 if(item.CustomerId == customerId)
                 {
@@ -356,7 +356,7 @@ namespace Gadgeothek_Admin_App
         private List<Reservation> getReservationForCustomer(string customerId)
         {
             List<Reservation> liste = new List<Reservation>();
-            foreach (Reservation item in service.GetAllReservations())
+            foreach (Reservation item in _service.GetAllReservations())
             {
                 if (item.CustomerId == customerId)
                 {
@@ -370,7 +370,7 @@ namespace Gadgeothek_Admin_App
         private List<Loan> getLoansForCustomer(string customerId)
         {
             List<Loan> liste = new List<Loan>();
-            foreach (Loan item in service.GetAllLoans())
+            foreach (Loan item in _service.GetAllLoans())
             {
                 if (item.CustomerId == customerId)
                 {
@@ -383,7 +383,7 @@ namespace Gadgeothek_Admin_App
 
         private List<Gadget> getAvailableGadgetsForCustomer(string customerId)
         {
-            List<Gadget> availableGadgets = service.GetAllGadgets();
+            List<Gadget> availableGadgets = _service.GetAllGadgets();
             foreach (Gadget item in getGadgetsForCustomer(customerId))
             {
                 availableGadgets.Remove(item);
@@ -395,7 +395,7 @@ namespace Gadgeothek_Admin_App
         {
             int id = 0;
             int testId = 0;
-            foreach (Reservation res in service.GetAllReservations())
+            foreach (Reservation res in _service.GetAllReservations())
             {
                 Int32.TryParse(res.Id, out id);
                 if (id > testId)
@@ -409,7 +409,7 @@ namespace Gadgeothek_Admin_App
         {
             int id = 0;
             int testId = 0;
-            foreach (Loan loan in service.GetAllLoans())
+            foreach (Loan loan in _service.GetAllLoans())
             {
                 Int32.TryParse(loan.Id, out id);
                 if (id > testId)
@@ -422,7 +422,7 @@ namespace Gadgeothek_Admin_App
         private int getWaitingPosition(Gadget item)
         {
             int waitingPosition = -1;
-            foreach (Reservation res in service.GetAllReservations())
+            foreach (Reservation res in _service.GetAllReservations())
             {
                 if (res.Gadget == item)
                 {

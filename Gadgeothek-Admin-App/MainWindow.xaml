@@ -9,23 +9,27 @@
         Title="Gadgeothek" 
         ResizeMode="CanResizeWithGrip">
     <DockPanel>
-        <TabControl x:Name="tabControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
-            <TabItem x:Name="gadgetTabItem" Header="Gadgets">
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBox Name="searchTextBox" Text="Suchen" Width="150" Height="10" Margin="0 0 20 0" TextChanged="searchTextBox_TextChanged" GotFocus="searchTextBox_GotFocus">
+        <TabControl x:Name="TabControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            <TabItem x:Name="GadgetTabItem" Header="Gadgets">
+                <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                        <Button Content="Add Gadget" Width="150"/>
+                        <TextBox Name="searchTextBox" Width="150" FontStyle="Italic">Search
                         </TextBox>
-                        <Button Name="addGadgetButton" Click="addGadgetButton_Click">
-                            <TextBlock>Gagdet Hinzufügen</TextBlock>
-                        </Button>
-                        <Button Name="eEditGadgetButton" Click="eEditGadgetButton_Click">
-                            <TextBlock>Gagdet bearbeiten</TextBlock>
-                        </Button>
                     </StackPanel>
-                    <StackPanel>
-                        <DataGrid Name="gadgetsDataGridView" ItemsSource="{Binding GadgetList}"/>
-                    </StackPanel>
-                </StackPanel>
+                    <DataGrid Name="GadgetsDataGridView" ItemsSource="{Binding GadgetList}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Delete">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Delete"
+                                            Command="Delete"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
             </TabItem>
             <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
                 <StackPanel Orientation="Vertical">
