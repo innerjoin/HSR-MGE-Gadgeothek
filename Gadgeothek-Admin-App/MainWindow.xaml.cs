@@ -18,7 +18,7 @@ namespace Gadgeothek_Admin_App
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public partial class MainWindow : MetroWindow
     {
-        LibraryAdminService service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
+        readonly LibraryAdminService _service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
         /// <summary>
         /// 
         /// </summary>
@@ -26,7 +26,7 @@ namespace Gadgeothek_Admin_App
         {
             InitializeComponent();
 
-            List<Gadget> data = service.GetAllGadgets();
+            List<Gadget> data = _service.GetAllGadgets();
 
             ObservableCollection<GadgetViewModel> viewGadgets = GetViewGadgets(data);
 
@@ -34,7 +34,7 @@ namespace Gadgeothek_Admin_App
             {
                 viewGadgets.CollectionChanged +=
                     new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-                gadgetsDataGridView.ItemsSource = viewGadgets;
+                GadgetsDataGridView.ItemsSource = viewGadgets;
             }
             else
             {
@@ -48,7 +48,7 @@ namespace Gadgeothek_Admin_App
             ObservableCollection <GadgetViewModel> obsGadgets = new ObservableCollection<GadgetViewModel>();
             if (data == null)
                 return null;
-            data.ForEach(x => obsGadgets.Add(new GadgetViewModel(service, x)));
+            data.ForEach(x => obsGadgets.Add(new GadgetViewModel(_service, x)));
             return obsGadgets;
         }
 
@@ -70,7 +70,7 @@ namespace Gadgeothek_Admin_App
                         {
                             healthy = newGadget.Manufacturer != null 
                                 && newGadget.Name != null 
-                                && service.AddGadget(newGadget);
+                                && _service.AddGadget(newGadget);
                         }
                         break;
                     case NotifyCollectionChangedAction.Replace:

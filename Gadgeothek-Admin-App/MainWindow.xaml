@@ -9,11 +9,25 @@
         Title="Gadgeothek" 
         ResizeMode="CanResizeWithGrip">
     <DockPanel>
-        <TabControl x:Name="tabControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
-            <TabItem x:Name="gadgetTabItem" Header="Gadgets">
-                <DataGrid Name="gadgetsDataGridView" />
+        <TabControl x:Name="TabControl" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            <TabItem x:Name="GadgetTabItem" Header="Gadgets">
+                <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+                    <Button Content="Add Gadget" DockPanel.Dock="Bottom"  Width="150px"/>
+                    <DataGrid Name="GadgetsDataGridView">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Delete">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Delete"
+                                            Command="Delete"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
             </TabItem>
-            <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
+            <TabItem x:Name="AusleiheTabItem" Header="Ausleihe">
                 <Grid Background="#FFE5E5E5" />
             </TabItem>
         </TabControl>
