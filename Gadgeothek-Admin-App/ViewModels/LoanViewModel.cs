@@ -6,7 +6,7 @@ using System;
 namespace Gadgeothek_Admin_App.ViewModels
 {
     [ImplementPropertyChanged]
-    public class LoanViewModel
+    public class LoanViewModel : IInstanceableViewModel
     {
         private readonly Loan _loan;
         private readonly LibraryAdminService _service;

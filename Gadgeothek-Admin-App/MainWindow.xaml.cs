@@ -21,99 +21,37 @@ namespace Gadgeothek_Admin_App
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public partial class MainWindow : MetroWindow
     {
-        public ObservableCollection<CustomerViewModel> CustomerList { get; set; }
-        public ObservableCollection<GadgetViewModel> GadgetList { get; set; }
-        public ObservableCollection<ReservationViewModel> ReservationList { get; set; }
-        public ObservableCollection<LoanViewModel> LoanList { get; set; }
-        LibraryAdminService _service;
-        string customerId;
+        readonly LibraryAdminService _service;
+        private string _customerId;
+
         public MainWindow()
         {
             InitializeComponent();
             _service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
 
-            GadgetsDataGridView.ItemsSource = _service.GetAllGadgets();
+            //GadgetsDataGridView.ItemsSource = _service.GetAllGadgets();
             enableDisableButtons(false);
             deleteLendingButton.IsEnabled = false;
             deleteReservationButton.IsEnabled = false;
-            List<Gadget> gadgetData = _service.GetAllGadgets();
-            List<Customer> customerData = _service.GetAllCustomers();
-            List<Reservation> reservationData = _service.GetAllReservations();
-            List<Loan> loanData = _service.GetAllLoans();
 
-            GadgetList = gadgetData != null ? new ObservableCollection<GadgetViewModel>(GetViewGadgets(gadgetData)): null;
-            CustomerList = customerData != null ? new ObservableCollection<CustomerViewModel>(GetViewCustomers(customerData)) : null;
-            ReservationList = reservationData != null ? new ObservableCollection<ReservationViewModel>(GetViewReservations(reservationData)) : null;
-            LoanList = loanData != null ? new ObservableCollection<LoanViewModel>(GetViewLoans(loanData)) : null;
+            ObservableCollection<GadgetViewModel> gadgetList =
+                ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, _service.GetAllGadgets());
+            ObservableCollection<CustomerViewModel> customerList =
+                ViewModelCollectionFactory.GetObservableCollection<CustomerViewModel, Customer>(_service, _service.GetAllCustomers());
+            ObservableCollection<ReservationViewModel> reservationList =
+                ViewModelCollectionFactory.GetObservableCollection<ReservationViewModel, Reservation>(_service, _service.GetAllReservations());
+            ObservableCollection<LoanViewModel> LoanList =
+                ViewModelCollectionFactory.GetObservableCollection<LoanViewModel, Loan>(_service, _service.GetAllLoans());
 
-            DataContext = this;
-
-            if (GadgetList != null)
-            {
-                GadgetList.CollectionChanged +=
-                    new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-            }
-
-            if (CustomerList != null)
-            {
-                CustomerList.CollectionChanged +=
-                    new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-            }
-
-            if (ReservationList != null)
-            {
-                ReservationList.CollectionChanged +=
-                    new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-            }
-
+            if (gadgetList != null)
+                gadgetList.CollectionChanged += DataGrid_CollectionChanged;
+            if (customerList != null)
+                customerList.CollectionChanged += DataGrid_CollectionChanged;
+            if (reservationList != null)
+                reservationList.CollectionChanged += DataGrid_CollectionChanged;
             if (LoanList != null)
-            {
-                LoanList.CollectionChanged +=
-                    new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-            }
-
-            else
-            {
-                MessageBox.Show("server seems to be unavailable");
-            }
-
-        }
-
-        private ObservableCollection<GadgetViewModel> GetViewGadgets(List<Gadget> data)
-        {
-            ObservableCollection<GadgetViewModel> obsGadgets = new ObservableCollection<GadgetViewModel>();
-            if (data == null)
-                return null;
-            data.ForEach(x => obsGadgets.Add(new GadgetViewModel(_service, x)));
-            return obsGadgets;
-        }
-
-        
-        private ObservableCollection<CustomerViewModel> GetViewCustomers(List<Customer> data)
-        {
-            ObservableCollection<CustomerViewModel> obsCustomers = new ObservableCollection<CustomerViewModel>();
-            if (data == null)
-                return null;
-            data.ForEach(x => obsCustomers.Add(new CustomerViewModel(_service, x)));
-            return obsCustomers;
-        }
-
-        private ObservableCollection<ReservationViewModel> GetViewReservations(List<Reservation> data)
-        {
-            ObservableCollection<ReservationViewModel> obsGadgets = new ObservableCollection<ReservationViewModel>();
-            if (data == null)
-                return null;
-            data.ForEach(x => obsGadgets.Add(new ReservationViewModel(_service, x)));
-            return obsGadgets;
-        }
-
-        private ObservableCollection<LoanViewModel> GetViewLoans(List<Loan> data)
-        {
-            ObservableCollection<LoanViewModel> obsGadgets = new ObservableCollection<LoanViewModel>();
-            if (data == null)
-                return null;
-            data.ForEach(x => obsGadgets.Add(new LoanViewModel(_service, x)));
-            return obsGadgets;
+                LoanList.CollectionChanged += DataGrid_CollectionChanged;
+            
         }
 
         void DataGrid_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -303,7 +241,7 @@ namespace Gadgeothek_Admin_App
             {
                 Reservation res = new Reservation();
                 res.Id = getNewReservationId();
-                res.CustomerId = customerId;
+                res.CustomerId = _customerId;
                 res.Finished = false;
                 res.GadgetId = ((Gadget)newReservationComboBox.SelectedItem).InventoryNumber;
                 res.ReservationDate = DateTime.Now;
@@ -318,7 +256,7 @@ namespace Gadgeothek_Admin_App
             {
                 Loan loan = new Loan();
                 loan.Id = getNewLoanId();
-                loan.CustomerId = customerId;
+                loan.CustomerId = _customerId;
                 loan.Gadget = (Gadget)newReservationComboBox.SelectedItem;
                 loan.GadgetId = ((Gadget)newReservationComboBox.SelectedItem).InventoryNumber;
                 loan.PickupDate = DateTime.Now;
@@ -330,11 +268,11 @@ namespace Gadgeothek_Admin_App
         {
             foreach (var item in e.AddedItems)
             {
-                customerId = ((CustomerViewModel)item).Studentnumber;
+                _customerId = ((CustomerViewModel)item).Studentnumber;
             }
-            reservationDataGridView.ItemsSource = getReservationForCustomer(customerId);
-            newReservationComboBox.ItemsSource = getAvailableGadgetsForCustomer(customerId);
-            lendingDataGridView.ItemsSource = getLoansForCustomer(customerId);
+            reservationDataGridView.ItemsSource = getReservationForCustomer(_customerId);
+            newReservationComboBox.ItemsSource = getAvailableGadgetsForCustomer(_customerId);
+            lendingDataGridView.ItemsSource = getLoansForCustomer(_customerId);
 
             enableDisableButtons(true);
         }

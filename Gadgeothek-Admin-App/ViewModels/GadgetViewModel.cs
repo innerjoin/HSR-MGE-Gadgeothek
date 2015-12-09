@@ -5,7 +5,7 @@ using PropertyChanged;
 namespace Gadgeothek_Admin_App.ViewModels
 {
     [ImplementPropertyChanged]
-    public class GadgetViewModel
+    public class GadgetViewModel : IInstanceableViewModel
     {
         private readonly Gadget _gadget;
         private readonly LibraryAdminService _service;

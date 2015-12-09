@@ -13,7 +13,7 @@
             <TabItem x:Name="GadgetTabItem" Header="Gadgets">
                 <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                        <Button Content="Add Gadget" Width="150"/>
+                        <Button Click="addGadgetButton_Click" Content="Add Gadget" Width="150"/>
                         <TextBox Name="searchTextBox" Width="150" FontStyle="Italic">Search
                         </TextBox>
                     </StackPanel>
