@@ -17,6 +17,11 @@ namespace Gadgeothek_Admin_App.ViewModels
             _loan = loan;
         }
 
+        public Loan getLoan()
+        {
+            return _loan;
+        }
+
         public string Id => _loan.Id;
         public string CustomerId
         {

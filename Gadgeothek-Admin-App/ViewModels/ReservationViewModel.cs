@@ -17,6 +17,11 @@ namespace Gadgeothek_Admin_App.ViewModels
             _reservation = reservation;
         }
 
+        public Reservation getReservation()
+        {
+            return _reservation;
+        }
+
         public string Id => _reservation.Id;
         public string CustomerId
         {
@@ -27,6 +32,7 @@ namespace Gadgeothek_Admin_App.ViewModels
                 _service.UpdateReservation(_reservation);
             }
         }
+
         public Customer Customer
         {
             get { return _reservation.Customer; }

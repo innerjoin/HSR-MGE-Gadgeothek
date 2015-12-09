@@ -16,6 +16,11 @@ namespace Gadgeothek_Admin_App.ViewModels
             _gadget = gadget;
         }
 
+        public Gadget getGadget()
+        {
+            return _gadget;
+        }
+
         public string InventoryNumber => _gadget.InventoryNumber;
 
         public Condition Condition
@@ -56,6 +61,21 @@ namespace Gadgeothek_Admin_App.ViewModels
                 _gadget.Name = value;
                 _service.UpdateGadget(_gadget);
             }
+        }
+
+        public override string ToString()
+        {
+            return FullDescription();
+        }
+
+        public string ShortDescription()
+        {
+            return $"{_gadget.Name} [{_gadget.InventoryNumber}]";
+        }
+
+        public string FullDescription()
+        {
+            return $"{_gadget.Name} [{_gadget.InventoryNumber}] by {_gadget.Manufacturer} - Condition: {_gadget.Condition.ToString().ToUpper()}";
         }
 
         public bool Remove()
