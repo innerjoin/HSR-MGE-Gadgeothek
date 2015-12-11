@@ -20,11 +20,13 @@ namespace Gadgeothek_Admin_App
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public partial class MainWindow : MetroWindow
     {
-        public ObservableCollection<GadgetViewModel> GadgetList;
-        readonly ObservableCollection<ReservationViewModel> _reservationList;
-        readonly ObservableCollection<LoanViewModel> _loanList;
+        public ObservableCollection<CustomerViewModel> CustomerList { get; set; }
+        public ObservableCollection<GadgetViewModel> GadgetList { get; set; }
+        public ObservableCollection<ReservationViewModel> ReservationList { get; set; }
+        public ObservableCollection<LoanViewModel> LoanList { get; set; }
         readonly LibraryAdminService _service;
         private string _customerId;
 
@@ -39,19 +41,22 @@ namespace Gadgeothek_Admin_App
             deleteReservationButton.IsEnabled = false;
 
             GadgetList = ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, _service.GetAllGadgets());
-            var customerList = ViewModelCollectionFactory.GetObservableCollection<CustomerViewModel, Customer>(_service, _service.GetAllCustomers());
-            _reservationList =  ViewModelCollectionFactory.GetObservableCollection<ReservationViewModel, Reservation>(_service, _service.GetAllReservations());
-            _loanList = ViewModelCollectionFactory.GetObservableCollection<LoanViewModel, Loan>(_service, _service.GetAllLoans());
+            CustomerList = ViewModelCollectionFactory.GetObservableCollection<CustomerViewModel, Customer>(_service, _service.GetAllCustomers());
+            ReservationList =  ViewModelCollectionFactory.GetObservableCollection<ReservationViewModel, Reservation>(_service, _service.GetAllReservations());
+            LoanList = ViewModelCollectionFactory.GetObservableCollection<LoanViewModel, Loan>(_service, _service.GetAllLoans());
+
+            DataContext = this;
 
             if (GadgetList != null)
                 GadgetList.CollectionChanged += DataGrid_CollectionChanged;
-            if (customerList != null)
-                customerList.CollectionChanged += DataGrid_CollectionChanged;
-            if (_reservationList != null)
-                _reservationList.CollectionChanged += DataGrid_CollectionChanged;
-            if (_loanList != null)
-                _loanList.CollectionChanged += DataGrid_CollectionChanged;
+            if (CustomerList != null)
+                CustomerList.CollectionChanged += DataGrid_CollectionChanged;
+            if (ReservationList != null)
+                ReservationList.CollectionChanged += DataGrid_CollectionChanged;
+            if (LoanList != null)
+                LoanList.CollectionChanged += DataGrid_CollectionChanged;
 
+            GadgetsDataGridView.ItemsSource = GadgetList;
         }
 
         void DataGrid_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -222,7 +227,7 @@ namespace Gadgeothek_Admin_App
             if (lendingDataGridView.SelectedItem != null)
             {
                 ((LoanViewModel)lendingDataGridView.SelectedItem).Remove();
-                _loanList.Remove(((LoanViewModel)lendingDataGridView.SelectedItem));
+                LoanList.Remove(((LoanViewModel)lendingDataGridView.SelectedItem));
             }
         }
 
@@ -231,7 +236,7 @@ namespace Gadgeothek_Admin_App
             if(reservationDataGridView.SelectedItem != null)
             {
                 ((ReservationViewModel)reservationDataGridView.SelectedItem).Remove();
-                _reservationList.Remove(((ReservationViewModel)reservationDataGridView.SelectedItem));
+                ReservationList.Remove(((ReservationViewModel)reservationDataGridView.SelectedItem));
             }
         }
 
@@ -250,7 +255,7 @@ namespace Gadgeothek_Admin_App
                 };
                 res.WaitingPosition = GetWaitingPosition(res.Gadget);
                 ReservationViewModel model = new ReservationViewModel(_service, res);
-                _reservationList.Add(model);
+                ReservationList.Add(model);
                 newReservationComboBox.SelectedIndex = -1;   
             }
         }
@@ -268,7 +273,7 @@ namespace Gadgeothek_Admin_App
                     PickupDate = DateTime.Now
                 };
                 LoanViewModel model = new LoanViewModel(_service, loan);
-                _loanList.Add(model);
+                LoanList.Add(model);
                 newLendingComboBox.SelectedIndex = -1;
             }
         }
@@ -290,13 +295,13 @@ namespace Gadgeothek_Admin_App
                 _customerId = ((CustomerViewModel)item).Studentnumber;
             }
 
-            var resSourceList = new CollectionViewSource() { Source = _reservationList };
+            var resSourceList = new CollectionViewSource() { Source = ReservationList };
             ICollectionView resList = resSourceList.View;
             var costumFilter = new Predicate<object>(FilterReservation);
             resList.Filter = costumFilter;
             reservationDataGridView.ItemsSource = resList;
 
-            var loanSourceList = new CollectionViewSource() { Source = _loanList };
+            var loanSourceList = new CollectionViewSource() { Source = LoanList };
             ICollectionView loanList = loanSourceList.View;
             var loanFilter = new Predicate<object>(FilterLoan);
             loanList.Filter = loanFilter;
@@ -314,7 +319,7 @@ namespace Gadgeothek_Admin_App
             return new ObservableCollection<GadgetViewModel>(ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, liste));
         }
 
-        private ObservableCollection<GadgetViewModel> GetLentGadgets()
+        private ObservableCollection<GadgetViewModel> getLentGadgets()
         {
             List<Gadget> liste = _service.GetAllLoans().Select(item => item.Gadget).ToList();
 
@@ -350,7 +355,7 @@ namespace Gadgeothek_Admin_App
         private ObservableCollection<GadgetViewModel> GetAvailableGadgetsForLoan(string customerId)
         {
             ObservableCollection<GadgetViewModel> availableGadgets = new ObservableCollection<GadgetViewModel>(ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, _service.GetAllGadgets()));
-            foreach (GadgetViewModel item in GetLentGadgets())
+            foreach (GadgetViewModel item in getLentGadgets())
             {
                 availableGadgets.Remove(item);
             }
@@ -374,10 +379,10 @@ namespace Gadgeothek_Admin_App
 
         private string GetNewReservationId()
         {
+            int id = 0;
             int testId = 0;
             foreach (Reservation res in _service.GetAllReservations())
             {
-                var id = 0;
                 int.TryParse(res.Id, out id);
                 if (id > testId)
                     testId = id;
