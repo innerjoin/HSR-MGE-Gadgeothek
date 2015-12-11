@@ -22,6 +22,7 @@ namespace Gadgeothek_Admin_App
             conditionComboBox.ItemsSource = Enum.GetValues(typeof(ch.hsr.wpf.gadgeothek.domain.Condition));
             conditionComboBox.SelectedIndex = 0;
             idTextBlock.Text = GetNewGadgetId();
+            nameTextBox.Focus();
         }
 
         public AddGadgetWindow(MainWindow parent) : this()

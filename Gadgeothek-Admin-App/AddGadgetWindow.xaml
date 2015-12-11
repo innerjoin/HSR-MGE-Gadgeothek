@@ -8,18 +8,17 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         Title="Add Gadget" Height="317.898" Width="323.864">
     <Grid Margin="0,0,2,-5">
-        <ComboBox x:Name="conditionComboBox" HorizontalAlignment="Left" Margin="101,185,0,0" VerticalAlignment="Top" Width="200" />
-        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Height="23" Margin="101,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
-        <TextBox x:Name="manufacturerTextBox" HorizontalAlignment="Left" Height="23" Margin="101,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
-        <TextBox x:Name="priceTextBox" HorizontalAlignment="Left" Height="23" Margin="101,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="28,22,0,0" TextWrapping="Wrap" Text="ID" VerticalAlignment="Top"/>
         <TextBlock x:Name="idTextBlock" HorizontalAlignment="Left" Margin="104,22,0,0" TextWrapping="Wrap" Text="ID_PLACEHOLDER" VerticalAlignment="Top" Width="181"/>
         <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="26,62,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Height="23" Margin="101,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
         <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="25,104,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top"/>
+        <TextBox x:Name="manufacturerTextBox" HorizontalAlignment="Left" Height="23" Margin="101,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
         <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="26,147,0,0" TextWrapping="Wrap" Text="Price" VerticalAlignment="Top"/>
+        <TextBox x:Name="priceTextBox" HorizontalAlignment="Left" Height="23" Margin="101,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200"/>
         <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="25,190,0,0" TextWrapping="Wrap" Text="Condition" VerticalAlignment="Top"/>
+        <ComboBox x:Name="conditionComboBox" HorizontalAlignment="Left" Margin="101,185,0,0" VerticalAlignment="Top" Width="200" />
         <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Left" Margin="136,244,0,0" VerticalAlignment="Top" Width="75" Click="cancelButton_Click"/>
         <Button x:Name="okButton" Content="OK" HorizontalAlignment="Left" Margin="226,244,0,0" VerticalAlignment="Top" Width="75" Click="okButton_Click"/>
-
     </Grid>
 </Controls:MetroWindow>
