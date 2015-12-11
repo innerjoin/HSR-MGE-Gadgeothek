@@ -1,53 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Microsoft.Build.Framework.XamlTypes;
 using ch.hsr.wpf.gadgeothek.service;
 using ch.hsr.wpf.gadgeothek.domain;
+using MahApps.Metro.Controls;
 using System.Configuration;
+using Gadgeothek_Admin_App.ViewModels;
+
 namespace Gadgeothek_Admin_App
 {
     /// <summary>
     /// Interaction logic for AddGadgetWindow.xaml
     /// </summary>
-    public partial class AddGadgetWindow : Window
+    public partial class AddGadgetWindow : MetroWindow
     {
+        readonly MainWindow _parentWindow;
+        readonly LibraryAdminService _service;
         public AddGadgetWindow()
         {
             InitializeComponent();
+            _service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
             conditionComboBox.ItemsSource = Enum.GetValues(typeof(ch.hsr.wpf.gadgeothek.domain.Condition));
             conditionComboBox.SelectedIndex = 0;
-            idTextBlock.Text = Guid.NewGuid().ToString();
+            idTextBlock.Text = GetNewGadgetId();
+        }
+
+        public AddGadgetWindow(MainWindow parent) : this()
+        {
+            _parentWindow = parent;
         }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            LibraryAdminService service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
-            double price = 0.0;
-            Gadget gadget = new Gadget();
-            gadget.Condition = (ch.hsr.wpf.gadgeothek.domain.Condition)conditionComboBox.SelectedValue;
-            gadget.Manufacturer = manufacturerTextBox.Text;
-            gadget.InventoryNumber = idTextBlock.Text;
-            gadget.Name = nameTextBox.Text;
-            Double.TryParse(priceTextBox.Text, out price);
+            double price;
+            Gadget gadget = new Gadget
+            {
+                Condition = (ch.hsr.wpf.gadgeothek.domain.Condition) conditionComboBox.SelectedValue,
+                Manufacturer = manufacturerTextBox.Text,
+                InventoryNumber = idTextBlock.Text,
+                Name = nameTextBox.Text
+            };
+            double.TryParse(priceTextBox.Text, out price);
             gadget.Price = price;
-            service.AddGadget(gadget);
-            this.Close();            
+            GadgetViewModel model = new GadgetViewModel(_service, gadget);
+            _parentWindow.GadgetList.Add(model);
+            Close();            
         }
+
+
+        private string GetNewGadgetId()
+        {
+            int testId = 0;
+            foreach (Gadget gadget in _service.GetAllGadgets())
+            {
+                var id = 0;
+                int.TryParse(gadget.InventoryNumber, out id);
+                if (id > testId)
+                    testId = id;
+            }
+
+            return (testId + 1).ToString();
+        }
+
+
     }
 }

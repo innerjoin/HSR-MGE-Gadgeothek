@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ch.hsr.wpf.gadgeothek.service;
 
 namespace Gadgeothek_Admin_App.ViewModels
@@ -14,7 +11,7 @@ namespace Gadgeothek_Admin_App.ViewModels
         {
             if (data == null) return null;
             ObservableCollection<T> collection = new ObservableCollection<T>();
-            data.ForEach((TV x) => collection.Add((T)Activator.CreateInstance(typeof(T), service, x)));
+            data.ForEach(x => collection.Add((T)Activator.CreateInstance(typeof(T), service, x)));
             return collection;
         }
     }

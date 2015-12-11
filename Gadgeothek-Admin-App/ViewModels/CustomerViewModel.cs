@@ -7,58 +7,63 @@ namespace Gadgeothek_Admin_App.ViewModels
     [ImplementPropertyChanged]
     public class CustomerViewModel : IInstanceableViewModel
     {
-        private readonly Customer _loan;
+        private readonly Customer _customer;
         private readonly LibraryAdminService _service;
 
         public CustomerViewModel(LibraryAdminService service, Customer customer)
         {
             _service = service;
-            _loan = customer;
+            _customer = customer;
+        }
+
+        public Customer GetCustomer()
+        {
+            return _customer;
         }
 
         public string Password
         {
-            get { return _loan.Password; }
+            get { return _customer.Password; }
             set
             {
-                _loan.Password = value;
-                _service.UpdateCustomer(_loan);
+                _customer.Password = value;
+                _service.UpdateCustomer(_customer);
             }
         }
 
         public string Email
         {
-            get { return _loan.Email; }
+            get { return _customer.Email; }
             set
             {
-                _loan .Email= value;
-                _service.UpdateCustomer(_loan);
+                _customer .Email= value;
+                _service.UpdateCustomer(_customer);
             }
         }
 
         public string Studentnumber
         {
-            get { return _loan.Studentnumber; }
+            get { return _customer.Studentnumber; }
             set
             {
-                _loan.Studentnumber = value;
-                _service.UpdateCustomer(_loan);
+                _customer.Studentnumber = value;
+                _service.UpdateCustomer(_customer);
             }
         }
 
         public string Name
         {
-            get { return _loan.Name; }
+            get { return _customer.Name; }
             set
             {
-                _loan.Name = value;
-                _service.UpdateCustomer(_loan);
+                _customer.Name = value;
+                _service.UpdateCustomer(_customer);
             }
         }
 
         public bool Remove()
         {
-            return _service.DeleteCustomer(_loan);
+            return _service.DeleteCustomer(_customer);
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Gadgeothek_Admin_App.ViewModels
+﻿namespace Gadgeothek_Admin_App.ViewModels
 {
     // this is a marker interface to indicate whether our viewmodel 
     // is instaneable by our generic factory or not

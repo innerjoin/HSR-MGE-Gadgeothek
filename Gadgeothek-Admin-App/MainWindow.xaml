@@ -13,9 +13,8 @@
             <TabItem x:Name="GadgetTabItem" Header="Gadgets">
                 <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
                     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                        <Button Click="addGadgetButton_Click" Content="Add Gadget" Width="150"/>
-                        <TextBox Name="searchTextBox" Width="150" FontStyle="Italic">Search
-                        </TextBox>
+                        <Button Name="addGadgetButton" Click="addGadgetButton_Click" Content="Add Gadget" Width="150"/>
+                        <TextBox Name="searchTextBox" Width="150" FontStyle="Italic" TextChanged="searchTextBox_TextChanged" GotFocus="searchTextBox_GotFocus">Search</TextBox>
                     </StackPanel>
                     <DataGrid Name="GadgetsDataGridView" ItemsSource="{Binding GadgetList}">
                         <DataGrid.Columns>
@@ -33,11 +32,21 @@
             </TabItem>
             <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
                 <StackPanel Orientation="Vertical">
-                    <DataGrid Name="customerDataGrid" MinHeight="100" ItemsSource="{Binding CustomerList}" SelectionChanged="customerDataGrid_SelectionChanged" Margin="10,0,-10,0"></DataGrid>
-                    
+                    <DataGrid Name="customerDataGrid" SelectedIndex="0" MinHeight="100" ItemsSource="{Binding CustomerList}" SelectionChanged="customerDataGrid_SelectionChanged" Margin="10,0,-10,0"></DataGrid>
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="reservationDataGridView" MinHeight="100" ItemsSource="{Binding ReservationList}" SelectionChanged="reservationDataGridView_SelectionChanged" />
+                            <DataGrid Name="reservationDataGridView" ItemsSource="{Binding ReservationList}" MinHeight="100" SelectionChanged="reservationDataGridView_SelectionChanged" >
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Delete">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Delete"
+                                            Command="Delete"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock>ID</TextBlock>
                                 <ComboBox Name="newReservationComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
@@ -53,7 +62,18 @@
 
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="lendingDataGridView"  MinHeight="100" ItemsSource="{Binding LoanList}" SelectionChanged="lendingDataGridView_SelectionChanged"/>
+                            <DataGrid Name="lendingDataGridView" MinHeight="100" SelectionChanged="lendingDataGridView_SelectionChanged">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Delete">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Delete"
+                                            Command="Delete"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock>ID</TextBlock>
                                 <ComboBox Name="newLendingComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
