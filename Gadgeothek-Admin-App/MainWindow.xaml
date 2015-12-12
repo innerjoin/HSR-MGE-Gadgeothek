@@ -48,7 +48,7 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock>ID</TextBlock>
+                                <TextBlock>Gadget</TextBlock>
                                 <ComboBox Name="newReservationComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
                                 <Button Name="addReservationButton" Width="100" Margin="0 0 40 0" Click="addReservationButton_Click">
                                     <TextBlock>Add Reservation</TextBlock>
@@ -75,7 +75,7 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock>ID</TextBlock>
+                                <TextBlock>Gadget</TextBlock>
                                 <ComboBox Name="newLendingComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
                                 <Button Name="addLendingButton" Width="100" Margin="0 0 40 0" Click="addLendingButton_Click">
                                     <TextBlock>Add Loan</TextBlock>
