@@ -34,28 +34,50 @@ namespace Gadgeothek_Admin_App
             InitializeComponent();
             _service = new LibraryAdminService(ConfigurationManager.AppSettings["server"]);
 
-            //GadgetsDataGridView.ItemsSource = _service.GetAllGadgets();
             EnableDisableButtons(false);
             deleteLendingButton.IsEnabled = false;
             deleteReservationButton.IsEnabled = false;
 
-            GadgetList = ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, _service.GetAllGadgets());
-            CustomerList = ViewModelCollectionFactory.GetObservableCollection<CustomerViewModel, Customer>(_service, _service.GetAllCustomers());
-            ReservationList =  ViewModelCollectionFactory.GetObservableCollection<ReservationViewModel, Reservation>(_service, _service.GetAllReservations());
-            LoanList = ViewModelCollectionFactory.GetObservableCollection<LoanViewModel, Loan>(_service, _service.GetAllLoans());
+            GadgetList = GetGadgets();
+            CustomerList = GetCustomers();
+            ReservationList = GetReservations();
+            LoanList = GetLoans();
 
             DataContext = this;
 
-            if (GadgetList != null)
-                GadgetList.CollectionChanged += DataGrid_CollectionChanged;
-            if (CustomerList != null)
-                CustomerList.CollectionChanged += DataGrid_CollectionChanged;
-            if (ReservationList != null)
-                ReservationList.CollectionChanged += DataGrid_CollectionChanged;
-            if (LoanList != null)
-                LoanList.CollectionChanged += DataGrid_CollectionChanged;
-
             GadgetsDataGridView.ItemsSource = GadgetList;
+        }
+
+        private ObservableCollection<LoanViewModel> GetLoans()
+        {
+            ObservableCollection<LoanViewModel> loans = ViewModelCollectionFactory.GetObservableCollection<LoanViewModel, Loan>(_service, _service.GetAllLoans());
+            if(loans != null)
+                loans.CollectionChanged += DataGrid_CollectionChanged;
+            return loans;
+        }
+
+        private ObservableCollection<ReservationViewModel> GetReservations()
+        {
+            ObservableCollection<ReservationViewModel> res = ViewModelCollectionFactory.GetObservableCollection<ReservationViewModel, Reservation>(_service, _service.GetAllReservations());
+            if(res != null)
+                res.CollectionChanged += DataGrid_CollectionChanged;
+            return res;
+        }
+
+        private ObservableCollection<CustomerViewModel> GetCustomers()
+        {
+            ObservableCollection<CustomerViewModel> customers = ViewModelCollectionFactory.GetObservableCollection<CustomerViewModel, Customer>(_service, _service.GetAllCustomers());
+            if(customers != null)
+                customers.CollectionChanged += DataGrid_CollectionChanged;
+            return customers;
+        }
+
+        private ObservableCollection<GadgetViewModel> GetGadgets()
+        {
+            ObservableCollection<GadgetViewModel> gadgets = ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, _service.GetAllGadgets());
+            if(gadgets != null)
+                gadgets.CollectionChanged += DataGrid_CollectionChanged;
+            return gadgets;
         }
 
         void DataGrid_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -68,7 +90,10 @@ namespace Gadgeothek_Admin_App
                     case NotifyCollectionChangedAction.Remove:
                         foreach (GadgetViewModel gadgetToRemove in e.OldItems)
                         {
-                            healthy = gadgetToRemove.Remove();
+                            if(MessageBox.Show("Are you sure you want to delete '" + gadgetToRemove.Name + " '?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes) { 
+                                healthy = gadgetToRemove.Remove();
+                            }
+                            if (!healthy) break;
                         }
                         break;
                     case NotifyCollectionChangedAction.Add:
@@ -88,6 +113,9 @@ namespace Gadgeothek_Admin_App
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                if (!healthy)
+                    GadgetsDataGridView.ItemsSource = GetGadgets();
+                
             }
 
             else if (sender.GetType() == typeof(ObservableCollection<CustomerViewModel>))
@@ -97,7 +125,11 @@ namespace Gadgeothek_Admin_App
                     case NotifyCollectionChangedAction.Remove:
                         foreach (CustomerViewModel customerToRemove in e.OldItems)
                         {
-                            healthy = customerToRemove.Remove();
+                            if (MessageBox.Show("Are you sure you want to delete '" + customerToRemove.Name + " '?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                            {
+                                healthy = customerToRemove.Remove();
+                            }
+                            if (!healthy) break;
                         }
                         break;
                     case NotifyCollectionChangedAction.Add:
@@ -119,6 +151,8 @@ namespace Gadgeothek_Admin_App
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                if (!healthy)
+                    customerDataGrid.ItemsSource = GetCustomers();
             }
 
             else if (sender.GetType() == typeof(ObservableCollection<ReservationViewModel>))
@@ -128,28 +162,31 @@ namespace Gadgeothek_Admin_App
                     case NotifyCollectionChangedAction.Remove:
                         foreach (ReservationViewModel reservationToRemove in e.OldItems)
                         {
-                            int waitingId = reservationToRemove.WaitingPosition;
-                            List<Reservation> reservationList = (from item in _service.GetAllReservations() where item.GadgetId == reservationToRemove.GadgetId select item).ToList();
-                            foreach(ReservationViewModel item in ReservationList)
+                            if (MessageBox.Show("Are you sure you want to remove the reservation '" + reservationToRemove.Gadget.Name + "' assigned to '" + reservationToRemove.Customer.Name + "'?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                             {
-                                if(item.WaitingPosition > waitingId)
+                                int waitingId = reservationToRemove.WaitingPosition;
+                                foreach (ReservationViewModel item in ReservationList)
                                 {
-                                    item.WaitingPosition -= 1;
+                                    if (item.WaitingPosition > waitingId)
+                                    {
+                                        item.WaitingPosition -= 1;
+                                    }
                                 }
-                            }
 
-                            healthy = reservationToRemove.Remove();
-                            //FilterReservationList();
+                                healthy = reservationToRemove.Remove();
+                            }
+                            if (!healthy) break;
                         }
                         break;
                     case NotifyCollectionChangedAction.Add:
                         foreach (ReservationViewModel newReservation in e.NewItems)
                         {
+                            newReservation.Customer = _service.GetCustomer(_customerId);
                             healthy = ((newReservation.CustomerId != string.Empty || newReservation.Customer != null)
                                         && (newReservation.Gadget != null || newReservation.GadgetId != string.Empty)
                                         && newReservation.Id != string.Empty && newReservation.WaitingPosition != -1
                                         && _service.AddReservation(newReservation.GetReservation())
-                                );
+                            );
                         }
                         break;
                     case NotifyCollectionChangedAction.Replace:
@@ -161,6 +198,8 @@ namespace Gadgeothek_Admin_App
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                if (!healthy)
+                    reservationDataGridView.ItemsSource = GetReservations();
             }
 
             else if (sender.GetType() == typeof(ObservableCollection<LoanViewModel>))
@@ -170,12 +209,17 @@ namespace Gadgeothek_Admin_App
                     case NotifyCollectionChangedAction.Remove:
                         foreach (LoanViewModel loanToRemove in e.OldItems)
                         {
-                            healthy = loanToRemove.Remove();
+                            if (MessageBox.Show("Are you sure you want to remove the lent '" + loanToRemove.Gadget.Name + "' by '" + loanToRemove.Customer.Name + "'?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                            {
+                                healthy = loanToRemove.Remove();
+                            }
+                            if (!healthy) break;
                         }
                         break;
                     case NotifyCollectionChangedAction.Add:
                         foreach (LoanViewModel newLoan in e.NewItems)
                         {
+                            newLoan.Customer = _service.GetCustomer(_customerId);
                             healthy = ((newLoan.Customer != null || newLoan.CustomerId != string.Empty)
                                 && (newLoan.Gadget != null || newLoan.GadgetId!= string.Empty)
                                 && newLoan.Id != string.Empty && _service.AddLoan(newLoan.GetLoan()));
@@ -190,11 +234,8 @@ namespace Gadgeothek_Admin_App
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-            }
-
-            if (!healthy)
-            {
-                // TODO prevent grid change
+                if (!healthy)
+                    lendingDataGridView.ItemsSource = GetLoans();
             }
         }
 
@@ -219,11 +260,12 @@ namespace Gadgeothek_Admin_App
 
         private bool FilterGadgets(object item)
         {
-            return ((GadgetViewModel)item).Name.Contains(searchTextBox.Text, StringComparison.InvariantCultureIgnoreCase) 
-                || ((GadgetViewModel)item).Manufacturer.Contains(searchTextBox.Text, StringComparison.InvariantCultureIgnoreCase) 
-                || ((GadgetViewModel)item).Price.ToString(CultureInfo.InvariantCulture).Contains(searchTextBox.Text, StringComparison.InvariantCultureIgnoreCase) 
-                || ((GadgetViewModel)item).Condition.ToString().Contains(searchTextBox.Text, StringComparison.InvariantCultureIgnoreCase)
-                || ((GadgetViewModel)item).InventoryNumber.Contains(searchTextBox.Text, StringComparison.InvariantCultureIgnoreCase);
+            const StringComparison c = StringComparison.InvariantCultureIgnoreCase;
+            return ((GadgetViewModel)item).Name.Contains(searchTextBox.Text, c) 
+                || ((GadgetViewModel)item).Manufacturer.Contains(searchTextBox.Text, c) 
+                || ((GadgetViewModel)item).Price.ToString(CultureInfo.InvariantCulture).Contains(searchTextBox.Text, c) 
+                || ((GadgetViewModel)item).Condition.ToString().Contains(searchTextBox.Text, c)
+                || ((GadgetViewModel)item).InventoryNumber.Contains(searchTextBox.Text, c);
         }
 
         private void addGadgetButton_Click(object sender, RoutedEventArgs e)
@@ -357,8 +399,8 @@ namespace Gadgeothek_Admin_App
         private ObservableCollection<GadgetViewModel> GetLentGadgets()
         {
             List<Gadget> liste = _service.GetAllLoans()
-                .Select(item => item.Gadget == null ? _service.GetAllGadgets()
-                .Find(gadget => { return gadget.InventoryNumber == item.GadgetId; }) : item.Gadget).ToList();
+                .Select(item => item.Gadget ?? _service.GetAllGadgets()
+                    .Find(gadget => gadget.InventoryNumber == item.GadgetId)).ToList();
 
             return new ObservableCollection<GadgetViewModel>(
                 ViewModelCollectionFactory.GetObservableCollection<GadgetViewModel, Gadget>(_service, liste));
