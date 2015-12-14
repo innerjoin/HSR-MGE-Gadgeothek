@@ -86,7 +86,7 @@ namespace Gadgeothek_Admin_App
                     case NotifyCollectionChangedAction.Remove:
                         foreach (GadgetViewModel gadgetToRemove in e.OldItems)
                         {
-                            if (_service.GetAllLoans().Where(items => { return items.GadgetId == gadgetToRemove.InventoryNumber; }).ToList().Count == 0)
+                            if (_service.GetAllLoans().Where(items => { return items.GadgetId == gadgetToRemove.InventoryNumber && items.ReturnDate == null; }).ToList().Count == 0)
                             {
                                 if (MessageBox.Show("Are you sure you want to delete '" + gadgetToRemove.Name + " '?", "Confirm", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                                 {
@@ -99,10 +99,19 @@ namespace Gadgeothek_Admin_App
                                             model.Remove();
                                         }
 
+
+                                        foreach (LoanViewModel model in LoanList.Where(loan => { return loan.GadgetId == gadgetToRemove.InventoryNumber && loan.ReturnDate != null; }))
+                                        {
+                                            model.Remove();
+                                        }
+
                                         healthy = gadgetToRemove.Remove();
 
                                         ReservationList = GetReservations();
                                         FilterReservationList();
+
+                                        LoanList = GetLoans();
+                                        FilterLoanList();
 
                                         newReservationComboBox.ItemsSource = GetAvailableGadgetsForCustomer(_customerId);
                                         newLendingComboBox.ItemsSource = GetAvailableGadgetsForLoan(_customerId);
