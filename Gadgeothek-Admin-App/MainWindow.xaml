@@ -32,10 +32,10 @@
             </TabItem>
             <TabItem x:Name="ausleiheTabItem" Header="Ausleihe">
                 <StackPanel Orientation="Vertical">
-                    <DataGrid Name="customerDataGrid" SelectedIndex="0" MinHeight="100" ItemsSource="{Binding CustomerList}" SelectionChanged="customerDataGrid_SelectionChanged" Margin="10,0,-10,0"></DataGrid>
+                    <DataGrid Name="customerDataGrid" SelectedIndex="0" MinHeight="100" ItemsSource="{Binding CustomerList}" SelectionChanged="customerDataGrid_SelectionChanged" Margin="10,0,-10,0" IsReadOnly="True"></DataGrid>
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="reservationDataGridView" ItemsSource="{Binding ReservationList}" MinHeight="100" SelectionChanged="reservationDataGridView_SelectionChanged" >
+                            <DataGrid Name="reservationDataGridView" ItemsSource="{Binding ReservationList}" MinHeight="100">
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Header="Delete">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -53,16 +53,13 @@
                                 <Button Name="addReservationButton" Width="100" Margin="0 0 40 0" Click="addReservationButton_Click">
                                     <TextBlock>Add Reservation</TextBlock>
                                 </Button>
-                                <Button Name="deleteReservationButton" Width="100" Click="deleteReservationButton_Click">
-                                    <TextBlock>Delete Reservation</TextBlock>
-                                </Button>
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
 
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="lendingDataGridView" MinHeight="100" SelectionChanged="lendingDataGridView_SelectionChanged">
+                            <DataGrid Name="lendingDataGridView" MinHeight="100">
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Header="Delete">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -79,9 +76,6 @@
                                 <ComboBox Name="newLendingComboBox" Margin="0 0 40 0" Width="100"></ComboBox>
                                 <Button Name="addLendingButton" Width="100" Margin="0 0 40 0" Click="addLendingButton_Click">
                                     <TextBlock>Add Loan</TextBlock>
-                                </Button>
-                                <Button Name="deleteLendingButton" Width="100" Click="deleteLendingButton_Click">
-                                    <TextBlock>Delete Loan</TextBlock>
                                 </Button>
                             </StackPanel>
                         </StackPanel>
