@@ -35,7 +35,7 @@
                     <DataGrid Name="customerDataGrid" SelectedIndex="0" MinHeight="100" ItemsSource="{Binding CustomerList}" SelectionChanged="customerDataGrid_SelectionChanged" Margin="10,0,-10,0" IsReadOnly="True"></DataGrid>
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="reservationDataGridView" ItemsSource="{Binding ReservationList}" MinHeight="100">
+                            <DataGrid Name="reservationDataGridView" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding ReservationList}" MinHeight="120" MaxHeight="120">
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Header="Delete">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -59,7 +59,7 @@
 
                     <GroupBox>
                         <StackPanel Orientation="Vertical">
-                            <DataGrid Name="lendingDataGridView" MinHeight="100">
+                            <DataGrid Name="lendingDataGridView" MinHeight="120"  MaxHeight="120" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Header="Delete">
                                         <DataGridTemplateColumn.CellTemplate>
